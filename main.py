@@ -14,7 +14,14 @@ stop_key = preferences["stop_key"]
 volume_percentage = preferences["volume_percentage"]
 log_sounds = preferences["log_sounds"]
 allow_overlap = preferences["allow_overlap"]
+allow_hold = preferences["allow_hold"]
 keybinds = preferences["keybinds"]
+
+current_sounds = []
+keys_held = []
+
+def message(text):
+    print(f"{get_date()} {text}")
 
 def get_date():
     return datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
@@ -32,7 +39,7 @@ def init_log():
 
 def log(path):
     if not os.path.exists(log_file):
-        print("ERROR Log file somehow disappeared")
+        message("ERROR Log file somehow disappeared")
         init_log()
 
     with open(log_file, "r", encoding="utf-8") as f:
@@ -47,16 +54,22 @@ def log(path):
         json.dump(logs, f, indent=4)
 
 def play(path):
+    global current_sounds
+
+    current_sounds = [
+        sound for sound in current_sounds
+        if sound.poll() is None
+    ]
+
     if log_sounds:
         log(path);
 
     if not allow_overlap:
-        # Todo: kill other instances
-        pass
+        stop()
 
-    print(f"Playing {path.split("/")[-1]}")
+    message(f"Playing {path.split("/")[-1]}")
 
-    subprocess.Popen(
+    sound = subprocess.Popen(
         [
             "ffplay",
             "-nodisp",
@@ -68,22 +81,75 @@ def play(path):
         stderr=subprocess.DEVNULL
     )
 
-# Todo: make this work, kill all other instances
+    current_sounds.append(sound)
+
 def stop():
-    return
+    global current_sounds
+
+    message("Stopping all sounds")
+
+    for sound in current_sounds:
+        sound.kill()
+
+    current_sounds.clear()
 
 def on_key(e):
+    global keys_held
+
+    key = e.name
+
     if e.event_type != "down":
+        if key in keys_held:
+            keys_held.remove(key)
         return
 
-    if e.name not in keybinds:
-        return
-
-    if keybinds[e.name] == stop_key:
+    if key == stop_key:
         stop()
         return
 
-    play(sounds_dir + keybinds[e.name] if sounds_dir.endswith("/") else sounds_dir + "/" + keybinds[e.name])
+    if not allow_hold:
+        if key in keys_held:
+            return
+
+    keys_held.append(key)
+
+    mods = []
+
+    if "shift" in keys_held:
+        mods.append("shift")
+    if "alt" in keys_held:
+        mods.append("alt")
+    if "ctrl" in keys_held:
+        mods.append("ctrl")
+
+    if key not in keybinds:
+        return
+
+    play(os.path.join(sounds_dir, keybinds[key]))
+
+def helper_error(var, type):
+    string = None
+
+    if type == "str":
+        string = "should be a string, put it in quotes"
+    elif type == "bool":
+        string = "should be a boolean, enter either true or false, don't capitalize the first character"
+    elif type == "vol":
+        string = "should be either an integer, float or a string. Just put a number from 0 to 100, it's really not that hard"
+    message(f"ERROR {var} {string}")
+
+if not isinstance(sounds_dir, str):
+    helper_error("sounds_dir", "str")
+if not isinstance(stop_key, str):
+    helper_error("stop_key", "str")
+if not isinstance(volume_percentage, (int, float, str)):
+    helper_error("volume_percentage", "vol")
+if not isinstance(log_sounds, bool):
+    helper_error("log_sounds", "bool")
+if not isinstance(allow_overlap, bool):
+    helper_error("allow_overlap", "bool")
+if not isinstance(allow_hold, bool):
+    helper_error("allow_hold", "bool")
 
 keyboard.hook(on_key)
 

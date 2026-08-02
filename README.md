@@ -1,10 +1,10 @@
-This is a very simple script with a *reasonable* amount of customization available that allows you to play sounds in the background by pressing assigned keys 
+This is a very simple script with a *reasonable* amount of customization available that allows you to play sounds in the background by pressing assigned keys
 
-**This script requires ffplay installed and added to path**, verify if you have ffplay installed by running
-
-```ps
-ffplay -version
-```
+> [!IMPORTANT]
+> **This script requires ffplay installed and added to path**, verify if you have ffplay installed by running
+> ```ps
+> ffplay -version
+> ```
 
 # Setup
 
@@ -19,8 +19,9 @@ py .\main.py
 
 After cloning, you're using the default config.
 
-**F1** - vine,
+**F1** - vine boom,
+**Ctrl+F1** - bass boosted vine boom,
 **F2** - fumo
 
 - Check out **preferences.jsonc** to customize everything including the keybindings
-- Put your sounds in the `logs/` directory
+- Put your sounds in the `sounds/` directory
