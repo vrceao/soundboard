@@ -1,0 +1,25 @@
+{
+    // Ignore the "Todo" comments lol
+
+    // Directory of where the sound files are placed
+    "sounds_dir": "sounds/",
+    // Key used to stop all currently playing sounds
+    // NOT WORKING YET!
+    "stop_key": "f12",
+    // Volume percentage from 0 to 100
+    "volume_percentage": 20,
+    // Whenever the sounds used should be logged to a file alongside the time of use
+    "log_sounds": false,
+    // Whenever two or more sounds could be played at the same time. If disabled, stop the previous sound when playing another
+    // NOT WORKING YET!
+    "allow_overlap": false,
+    // Keybinds and sounds linked to them, don't forget to include the file extension
+    // Todo: show all possible keybinds somewhere
+    // Todo: add support for combinations with ctrl/shift/alt
+    // Todo: make it work even without file extension by checking a list of popular audio extensions
+    // Todo: add volume per keybind? maybe not necessary but possible so it looks cleaner
+    "keybinds": {
+        "f1": "vine.mp3",
+        "f2": "fumo.mp3"
+    }
+}
