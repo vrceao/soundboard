@@ -15,6 +15,12 @@ py -m pip install -r requirements.txt
 py .\main.py
 ```
 
+> [!TIP]
+> Run `main.py` with `pyw` to not spawn a console window
+> ```ps
+> pyw .\main.py
+> ```
+
 # Customization
 
 After cloning, you're using the default config.

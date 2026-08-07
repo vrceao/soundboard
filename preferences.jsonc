@@ -2,7 +2,7 @@
     // Directory of where the sound files are placed
     "sounds_dir": "sounds/",
     // Key used to stop all currently playing sounds
-    "stop_key": "f12",
+    "stop_keys": ["pause", "f12"],
     // Volume percentage from 0 to 100
     "volume_percentage": 25,
     // Whenever the sounds used should be logged to a file alongside the time of use
@@ -13,10 +13,11 @@
     "allow_hold": false,
     // Keybinds and sounds linked to them, don't forget to include the file extension
     // You don't need to make subfolders inside sounds/ but you can if you want to
-    // You can add modifiers (ctrl+alt+shift), just make sure they are in that order
+    // You can add modifiers (ctrl+alt+shift), just make sure that you type "ctrl" first, then "alt" and "shift" at the end
     "keybinds": {
         "f1": "examples/vine.mp3",
         "ctrl+f1": "examples/vine-boosted.mp3",
-        "f2": "examples/fumo.mp3"
+        "f2": "examples/fumo.mp3",
+        "ctrl+alt+shift+f12": "examples/kukifumo.mp3"
     }
 }

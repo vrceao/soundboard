@@ -10,7 +10,7 @@ with open("preferences.jsonc", "r", encoding="utf-8") as f:
     preferences = json5.load(f)
 
 sounds_dir = preferences["sounds_dir"]
-stop_key = preferences["stop_key"]
+stop_keys = preferences["stop_keys"]
 volume_percentage = preferences["volume_percentage"]
 log_sounds = preferences["log_sounds"]
 allow_overlap = preferences["allow_overlap"]
@@ -65,7 +65,7 @@ def play(path):
     ]
 
     if log_sounds:
-        log(path);
+        log(path)
 
     if not allow_overlap:
         stop()
@@ -81,7 +81,8 @@ def play(path):
             path
         ],
         stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
+        stderr=subprocess.DEVNULL,
+        creationflags=subprocess.CREATE_NO_WINDOW
     )
 
     current_sounds.append(sound)
@@ -99,39 +100,34 @@ def stop():
 def on_key(e):
     global keys_held
 
-    key = e.name
+    key = e.name.lower()
 
-    if e.event_type != "down":
+    if e.event_type == "up":
         if key in keys_held:
             keys_held.remove(key)
         return
 
-    if key == stop_key:
-        stop()
+    if not allow_hold and key in keys_held:
         return
-
-    if not allow_hold:
-        if key in keys_held:
-            return
 
     keys_held.append(key)
 
-    mods = []
+    modifiers = ["ctrl", "alt", "shift"]
+    held_modifiers = [mod for mod in modifiers if mod in keys_held]
 
-    if "shift" in keys_held:
-        mods.append("shift")
-    if "alt" in keys_held:
-        mods.append("alt")
-    if "ctrl" in keys_held:
-        mods.append("ctrl")
-
-    if mods:
-        key = "+".join(mods + [key])
-
-    if key not in keybinds:
+    if key in modifiers:
         return
 
-    play(os.path.join(sounds_dir, keybinds[key]))
+    bind = "+".join(held_modifiers + [key])
+
+    if bind in stop_keys:
+        stop()
+        return
+
+    if bind not in keybinds:
+        return
+
+    play(os.path.join(sounds_dir, keybinds[bind]))
 
 def helper_error(var, type):
     string = None
@@ -140,14 +136,16 @@ def helper_error(var, type):
         string = "should be a string, put it in quotes"
     elif type == "bool":
         string = "should be a boolean, enter either true or false, don't capitalize the first character"
+    elif type == "list":
+        string = "should be an array"
     elif type == "vol":
         string = "should be either an integer, float or a string. Just put a number from 0 to 100, it's really not that hard"
     message(f"ERROR {var} {string}")
 
 if not isinstance(sounds_dir, str):
     helper_error("sounds_dir", "str")
-if not isinstance(stop_key, str):
-    helper_error("stop_key", "str")
+if not isinstance(stop_keys, list):
+    helper_error("stop_keys", "list")
 if not isinstance(volume_percentage, (int, float, str)):
     helper_error("volume_percentage", "vol")
 if not isinstance(log_sounds, bool):
