@@ -1,1 +1,6 @@
 logs
+sounds/*
+!sounds/examples
+!sounds/examples/**
+run.bat
+venv

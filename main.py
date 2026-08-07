@@ -21,10 +21,13 @@ current_sounds = []
 keys_held = []
 
 def message(text):
-    print(f"{get_date()} {text}")
+    print(f"{get_formatted_date()} {text}")
 
 def get_date():
     return datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+def get_formatted_date():
+    return datetime.now().strftime("%d.%m.%Y %H:%M:%S")
 
 def get_unix():
     return str(time.time()).split(".")[0]
@@ -121,6 +124,9 @@ def on_key(e):
         mods.append("alt")
     if "ctrl" in keys_held:
         mods.append("ctrl")
+
+    if mods:
+        key = "+".join(mods + [key])
 
     if key not in keybinds:
         return
